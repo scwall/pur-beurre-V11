@@ -17,6 +17,18 @@
     </header>
     <section>
         <div class="container">
+        <div class="row">
+        <div class="col-lg-3 top-buffer text-color-theme">
+         <ul>
+            {% for categorie in categories %}
+                <li>
+                    {{ categorie.id }}
+                </li>
+            {% endfor %}
+
+            </ul>
+        </div>
+        <div class="col-lg-9">
             {% for product in products %}
                 {% if  forloop.counter == 1 or forloop.counter == 4 %}
                     <div class="row top-buffer">
@@ -59,6 +71,8 @@
             {% endif %}
 
             {% endfor %}
+        </div>
+        </div>
             <div class="row justify-content-between" style="margin-top: 2rem;">
 
                 {% if products.has_previous %}

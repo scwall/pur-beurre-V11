@@ -58,11 +58,15 @@ def result(request):
                 original_product = product[0]
                 categories = Categorie.objects.filter(products__id=product[0].id)
                 products = Product.objects.filter(categorie__in=categories).order_by('nutrition_grade')
+                if request.GET.get('category_selected') is not None:
+                    category = request.GET.get('category_selected')
+                    productsonecategorie = Product.objects.filter(categorie__id=category).order_by('nutrition_grade')
+                    print(productsonecategorie)
                 paginator = Paginator(products, 6)
                 page = request.GET.get('page')
                 products_paginator = paginator.get_page(number=page)
                 context = {'products': products_paginator, 'name_product_search': name_product_search,
-                           'original_product': original_product, 'id_product': save_product}
+                           'original_product': original_product, 'id_product': save_product, 'categories': categories}
 
             else:
                 raise Http404(
