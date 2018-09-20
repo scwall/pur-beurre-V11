@@ -22,7 +22,7 @@
          <ul>
             {% for categorie in categories %}
                 <li>
-                    {{ categorie.id }}
+                    <a href="{% url 'food_and_search:result'%}?product={{ request.GET.product }}&category_selected={{ categorie.id }}"> {{categorie}} ({{ categorie }}) </a>
                 </li>
             {% endfor %}
 
