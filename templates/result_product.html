@@ -19,10 +19,11 @@
         <div class="container">
         <div class="row">
         <div class="col-lg-3 top-buffer text-color-theme">
-         <ul>
+        <h3 class="text-center"> Liste des catégories</h3>
+         <ul id="navbar-result">
             {% for categorie in categories %}
                 <li>
-                    <a href="{% url 'food_and_search:result'%}?product={{ request.GET.product }}&category_selected={{ categorie.id }}"> {{categorie}} ({{ categorie }}) </a>
+                    <a href="{% url 'food_and_search:result'%}?product={{ request.GET.product }}&category_selected={{ categorie.id }}"> <b>{{categorie}} ({{ categorie.rowsProduct }})</b> </a>
                 </li>
             {% endfor %}
 

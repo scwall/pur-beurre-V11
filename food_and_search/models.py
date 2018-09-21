@@ -14,9 +14,13 @@ class Categorie(models.Model):
     name = models.CharField(max_length=150)
     id_category = models.CharField(max_length=200)
 
+    def calculateRowsProduct(self):
+        return Product.objects.filter(categorie__id=self.id).count()
+
     def __str__(self):
         return self.name
 
+    rowsProduct = property(calculateRowsProduct)
 
 class Product(models.Model):
     user_product = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='favourite_product')

@@ -1,6 +1,7 @@
-from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.http import Http404
@@ -57,8 +58,6 @@ def result(request):
             if product.exists():
                 original_product = product[0]
                 categories = Categorie.objects.filter(products__id=product[0].id)
-                for category in categories:
-                    count_category = Categorie.objects.filter(id=category.id).count()
                 if request.GET.get('category_selected') is not None:
                     category = request.GET.get('category_selected')
                     products = Product.objects.filter(categorie__id=category).order_by('nutrition_grade')
@@ -103,7 +102,17 @@ def detail_product(request, pk):
 # Views user
 @login_required(login_url='/login/')
 def user_account(request):
-    return render(request, template_name='user_page.html')
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, "Votre mot de passe a été mis à jour avec succès!")
+        else:
+            messages.error(request, "Veuillez corriger l'erreur ci-dessous")
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request,'user_page.html',{'form':form})
 
 
 # Form and view for user registration

@@ -1,4 +1,5 @@
-from django.test import TestCase, Client, SimpleTestCase
+from bs4 import BeautifulSoup
+from django.test import TestCase, Client, SimpleTestCase, LiveServerTestCase
 from django.urls import reverse
 from django.core.management import call_command
 from django.test import TestCase
@@ -6,7 +7,9 @@ from django.test import TestCase
 from food_and_search.models import Product, Categorie
 from django.contrib.auth.models import User
 from unittest import mock
-class ProductTestCase(TestCase):
+import requests
+
+class ProductTestCase(LiveServerTestCase):
     #Creating objects in database for the tests
     def setUp(self):
         self.fruit = Categorie.objects.create(name='fruit', id_category='fruit_id')
@@ -108,6 +111,12 @@ class ProductTestCase(TestCase):
     def test_result(self):
         response = self.client.get('/result/', data={'product': 'pomme'})
         self.assertEqual(response.status_code, 200)
+        response = requests.get(self.live_server_url+"/result/?product=pomme")
+        self.assertEqual(response.status_code,200)
+        soup = BeautifulSoup(response.content)
+        samples = soup.find_all(id="navbar-result")
+        self.assertEqual(str(samples[0].li.find('b')),'<b>fruit (7)</b>')
+
 
     def test_result_raise_error(self):
         response = self.client.get('/result/', data={'product': 'pommier'})
@@ -158,4 +167,15 @@ class ProductTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         user = User.objects.get(username='Foo2')
         self.assertIsNotNone(user)
-
+        self.client.logout()
+    def test_change_password(self):
+        self.client.login(username='foo', password='foo#')
+        response = self.client.get(reverse('food_and_search:user'))
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post("/user/",
+                                    {'old_password': 'foo#', 'new_password1': 'Foutting2018#', 'new_password2': 'Foutting2018#'})
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
+        self.client.login(username='foo', password='Foutting2018#')
+        response = self.client.get(reverse('food_and_search:user'))
+        self.assertEqual(response.status_code, 200)
