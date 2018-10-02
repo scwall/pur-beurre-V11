@@ -1,3 +1,5 @@
+import signal
+
 from bs4 import BeautifulSoup
 from django.test import TestCase, Client, SimpleTestCase, LiveServerTestCase
 from django.urls import reverse
@@ -8,6 +10,7 @@ from food_and_search.models import Product, Categorie
 from django.contrib.auth.models import User
 from unittest import mock
 import requests
+import sys
 
 class ProductTestCase(LiveServerTestCase):
     #Creating objects in database for the tests
@@ -113,7 +116,7 @@ class ProductTestCase(LiveServerTestCase):
         self.assertEqual(response.status_code, 200)
         response = requests.get(self.live_server_url+"/result/?product=pomme")
         self.assertEqual(response.status_code,200)
-        soup = BeautifulSoup(response.content)
+        soup = BeautifulSoup(response.content,features="html.parser")
         samples = soup.find_all(id="navbar-result")
         self.assertEqual(str(samples[0].li.find('b')),'<b>fruit (7)</b>')
 

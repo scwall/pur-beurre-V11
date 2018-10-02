@@ -21,7 +21,7 @@ def index(request):
 @login_required(login_url='/login/')
 def save_product(request):
     current_user = request.user
-    user_products = Product.objects.filter(user_product__exact=current_user.id)
+    user_products = Product.objects.filter(user_product__exact=current_user.id).order_by('pk')
     paginator = Paginator(user_products, 6)
     if request.method == 'GET':
         page = request.GET.get('page')
