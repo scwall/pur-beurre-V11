@@ -99,8 +99,14 @@ DATABASES = {
         'PASSWORD': 'purebeurre##',
         'HOST': 'localhost',
         'PORT': '5432',
-    }
+    },
 }
+# Create temporary database for test
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'datatest'
+    }
 if os.environ.get('ENV') == 'PRODUCTION':
     db_from_env = dj_database_url.config(conn_max_age=500)
     DATABASES['default'].update(db_from_env)
